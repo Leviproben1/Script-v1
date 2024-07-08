@@ -1,0 +1,182 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+ 
+local Window = Rayfield:CreateWindow({
+    Name = "Rob a Convenience script",
+    LoadingTitle = "Levy's hub",
+    LoadingSubtitle = "by Leviproben1",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = nil, -- Create a custom folder for your hub/game
+        FileName = "Levy's hub"
+    },
+    Discord = {
+        Enabled = true,
+        Invite = "utJyQfPW", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+        RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+    },
+    KeySystem = true, -- Set this to true to use our key system
+    KeySettings = {
+        Title = "Rob a Convenience store script",
+        Subtitle = "Key System",
+        Note = "Go to the discord",
+        FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+        SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+        GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+        Key = {"neSSCbd1APk2UQH2mCYZOtsibX03FVWkOcnJsenA5YGYR4Yf76WSYBkJHw0UD"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+    }
+})
+ 
+local Tab = Window:CreateTab("Main", nil) -- Title, Image
+local SectionPlayer = Tab:CreateSection("Player")
+ 
+local SpeedSlider = Tab:CreateSlider({
+    Name = "Player Speed",
+    Range = {0, 500},
+    Increment = 1,
+    Suffix = "Speed",
+    CurrentValue = 16,
+    Flag = "SpeedSlider", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+    Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Value)
+    end,
+})
+ 
+local JumpSlider = Tab:CreateSlider({
+    Name = "Player Jump",
+    Range = {0, 500},
+    Increment = 1,
+    Suffix = "Jump Power",
+    CurrentValue = 16,
+    Flag = "JumpSlider", -- A unique flag for the jump slider
+    Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = (Value)
+    end,
+})
+ 
+local Button = Tab:CreateButton({
+   Name = "Third Person",
+   Callback = function()
+           local player = game.Players.LocalPlayer
+        player.CameraMode = Enum.CameraMode.Classic
+        player.CameraMinZoomDistance = 1
+   end,
+})
+
+local ToggleNoclip = Tab:CreateToggle({
+    Name = "Noclip",
+    CurrentValue = false,
+    Flag = "ToggleNoclip",
+    Callback = function(Value)
+        -- Get the local player and their character
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+ 
+        -- Function to set the collision state of the character
+        local function setCollisionState(state)
+            for _, part in ipairs(character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = state
+                end
+            end
+        end
+ 
+        -- Toggle the collision state based on the toggle value
+        if Value then
+            -- Disable collisions
+            setCollisionState(false)
+        else
+            -- Enable collisions
+            setCollisionState(true)
+        end
+    end,
+})
+ 
+-- Ensure the character's collision state is reset when they respawn
+game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
+    local Value = ToggleNoclip:GetValue()
+    local function setCollisionState(state)
+        for _, part in ipairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = state
+            end
+        end
+    end
+    setCollisionState(not Value)
+end)
+ 
+local SectionMain = Tab:CreateSection("Main")
+local ToggleGuardEsp = Tab:CreateToggle({
+    Name = "Guard Esp",
+    CurrentValue = false,
+    Flag = "ToggleGuardEsp", -- A unique flag for the guard ESP toggle
+    Callback = function(Value)
+        if Value then
+            for _, guard in ipairs(game.Workspace.Guards:GetChildren()) do
+                if guard:IsA("Model") and not guard:FindFirstChild("Highlight") then
+                    local newLight = Instance.new("Highlight")
+                    newLight.Parent = guard
+                end
+            end
+        else
+            for _, guard in ipairs(game.Workspace.Guards:GetChildren()) do
+                if guard:IsA("Model") then
+                    local highlight = guard:FindFirstChild("Highlight")
+                    if highlight then
+                        highlight:Destroy()
+                    end
+                end
+            end
+        end
+    end,
+})
+
+local ToggleInstantSell = Tab:CreateToggle({
+    Name = "Instant Sell",
+    CurrentValue = false,
+    Flag = "ToggleInstantSell", -- A unique flag for the instant sell toggle
+    Callback = function(Value)
+        if Value then
+            game.Workspace.Selling.SellPart.Prompt.HoldDuration = 0
+        else
+            game.Workspace.Selling.SellPart.Prompt.HoldDuration = 1
+        end
+    end,
+})
+
+local ButtonEzPickup = Tab:CreateButton({
+    Name = "Ez pickup",
+    Callback = function()
+        local toggle = true
+        while true do
+            wait(0.2) 
+
+            -- Toggle the HoldDuration between 0 and 1
+            for _, item in ipairs(game.Workspace.Items:GetDescendants()) do
+                if item:IsA("ProximityPrompt") then
+                    item.HoldDuration = toggle and 0 or 1
+                end
+            end
+
+            toggle = not toggle -- Toggle the state for the next iteration
+        end
+    end,
+})
+
+ 
+local Button = Tab:CreateButton({
+   Name = "Delete Trash + Spawns",
+   Callback = function()
+game.Workspace.Slippers:Destroy()
+game.Workspace.SlipperLocations:Destroy()
+   end,
+})
+ 
+local SectionGui = Tab:CreateSection("Gui")
+local ToggleShopGui = Tab:CreateToggle({
+    Name = "Shop gui",
+    CurrentValue = false,
+    Flag = "ToggleShopGui", -- A unique flag for the shop GUI toggle
+    Callback = function(Value)
+        game.Players.LocalPlayer.PlayerGui.UpgradesUi.Enabled = (Value)
+    end,
+})
