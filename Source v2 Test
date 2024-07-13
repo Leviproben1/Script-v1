@@ -159,6 +159,13 @@ local ButtonDeleteTrash = Tab:CreateButton({
     end,
 })
 
+local Button = Tab:CreateButton({
+   Name = "Delete Guards",
+   Callback = function()
+   game.Workspace.Guards:Destroy
+   end,
+})
+
 local SectionGui = Tab:CreateSection("Gui")
 local ToggleShopGui = Tab:CreateToggle({
     Name = "Shop gui",
