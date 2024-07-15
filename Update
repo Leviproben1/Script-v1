@@ -28,7 +28,7 @@ local Window = Rayfield:CreateWindow({
     }
 })
 
-local Tab = Window:CreateTab("Main", nil) -- Title, Image
+ local Tab = Window:CreateTab("Main", nil) -- Title, Image
 
 local Section = Tab:CreateSection("Player")
 
